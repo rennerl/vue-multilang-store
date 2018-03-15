@@ -1,4 +1,4 @@
-22af645d1859cb5ca6da0c484f1f37ea[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Issues](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](#issues)
 
 # Vue Multilanguage Label Store
