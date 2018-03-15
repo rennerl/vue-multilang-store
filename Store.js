@@ -11,6 +11,9 @@ let activeLanguage = null
 // The object that holds all lables with their translations.
 let labels = {}
 
+// Object with all label keys, used to provide it to each component.
+let labelKeys = {}
+
 
 /**
  * Function to add a new label to the store.
@@ -91,18 +94,22 @@ const addLabel = (key, translation) => {
  * @param   {String} key
  *          The key of the label to get translation for.
  *
+ * @param   {String} lang
+ *          The language the label should be translated to.
+ *
+ *
  * @param   {String} translation
  *          The translation corresponding to the active language.
  */
-const getTranslation = key => {
+const getTranslation = (key, lang) => {
   // Check if a label with this key exists.
   if (labels[key]) {
-    if (labels[key][activeLanguage]) {
+    if (labels[key][lang]) {
       // Return translation for the active language.
-      return labels[key][activeLanguage]
+      return labels[key][lang]
     } else {
       // Return the default language translations.
-      return labels[key][defaultLanguage]
+      return labels[key][lang]
     }
   } else {
     // Label is not defined.
@@ -168,8 +175,9 @@ const Store = {
       defaultLanguage = languageList[0]
     }
 
-    // Set the default language, as the curently active one.
+    // Set the active language to the default one.
     activeLanguage = defaultLanguage
+  
 
     /* Labels */
     if (options.labels) {
@@ -178,6 +186,12 @@ const Store = {
         addLabel(key, options.labels[key])
       }
     }
+
+    /* Label Keys */
+    if (options.labelKeys) {
+      labelKeys = options.labelKeys
+    }
+
 
     /*
      * Functions
@@ -248,7 +262,15 @@ const Store = {
       Vue.filter('translate', function (key, after = '', before = '') { 
         const extendAfter = after.length === 0 ? after : ` ${after}`
         const extendBefore = before.length === 0 ? before: `${before} `
-        return `${extendBefore}${getTranslation(key)}${extendAfter}`
+        return `${extendBefore}${getTranslation(key, activeLanguage)}${extendAfter}`
+      })
+
+      Vue.mixin({
+        data: function () {
+          return {
+            labels: labelKeys
+          }
+        }
       })
   }
 }
