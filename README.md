@@ -1,4 +1,4 @@
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+22af645d1859cb5ca6da0c484f1f37ea[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Issues](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](#issues)
 
 # Vue Multilanguage Label Store
@@ -137,7 +137,7 @@ Vue.use(LabelStore, {
   defaultLanguage: langs.EN,
   labelKeys: keys,
   labels: labels
-})d0cf705f201ddc526f49ba2e62392e21
+})
 ```
 
 **Attention:**<br>
