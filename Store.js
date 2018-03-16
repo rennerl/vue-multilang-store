@@ -117,6 +117,18 @@ const getTranslation = (key, lang) => {
   }
 }
 
+
+function writeLanguageToLocalStorage () {
+  // Store the active language.
+  localStorage.language = activeLanguage
+}
+
+function readLanguageFromLocalStorage () {
+  // Is null if no language has been defined.
+  return localStorage.language
+}
+
+
 /* The Plugin */
 const Store = {
 
@@ -175,9 +187,11 @@ const Store = {
       defaultLanguage = languageList[0]
     }
 
-    // Set the active language to the default one.
-    activeLanguage = defaultLanguage
-  
+    // Set the active language.
+    const storedLanguage = readLanguageFromLocalStorage()
+    activeLanguage = storedLanguage ? storedLanguage : defaultLanguage
+    writeLanguageToLocalStorage()
+
 
     /* Labels */
     if (options.labels) {
@@ -225,8 +239,9 @@ const Store = {
         throw new Error('The active language could only be set one defined in the option list!')
       }
 
-      // Set the active language.
+      // Set the active language and write to the local storage.
       activeLanguage = lang
+      writeLanguageToLocalStorage()
     }
 
     /**
