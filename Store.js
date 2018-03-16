@@ -242,6 +242,9 @@ const Store = {
       // Set the active language and write to the local storage.
       activeLanguage = lang
       writeLanguageToLocalStorage()
+
+      // Reload the window to rerender.
+      location.reload()
     }
 
     /**
