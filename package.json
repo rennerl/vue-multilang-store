@@ -23,5 +23,8 @@
     "url": "https://github.com/weilbith/vue-multilang-store/issues"
   },
   "homepage": "https://github.com/weilbith/vue-multilang-store#readme",
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "vue": "^2.5.16"
+  }
 }
