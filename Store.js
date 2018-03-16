@@ -258,7 +258,11 @@ const Store = {
      * Provide the translate function directly besides to the filter.
      * For a further description see the function 'getTranslation'.
      */
-    Vue.prototype.$labelStore.translate = getTranslation
+    Vue.prototype.$labelStore.translate = key => {
+      return getTranslation(key, activeLanguage)
+    }
+
+
 
     /**
      * Filter
