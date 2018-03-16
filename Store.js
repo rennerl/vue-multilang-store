@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 /* Properties */
 // The list of all available languages.
 let languageList = []
@@ -207,6 +209,10 @@ const Store = {
     }
 
 
+    // Create a global even bus.
+    window.languageEventBus = new Vue()
+
+
     /*
      * Functions
      */
@@ -227,6 +233,7 @@ const Store = {
       return activeLanguage
     }
 
+
     /**
      * Function to set the active language.
      * Have to be a language from the list set by the options.
@@ -243,8 +250,8 @@ const Store = {
       activeLanguage = lang
       writeLanguageToLocalStorage()
 
-      // Reload the window to rerender.
-      location.reload()
+      // Emit the event, that a new language has been set and rerendering is required.
+      window.languageEventBus.$emit('changeLanguage')
     }
 
     /**
@@ -289,13 +296,21 @@ const Store = {
      */
 
     /**
-     * Simple mix for the data object, to distribute the label keys to all components.
+     * Distribute the label keys to all components.
+     * Watch for the update event to start rerender.
      */
     Vue.mixin({
       data: function () {
         return {
-          labels: labelKeys
+          labels: labelKeys,
         }
+      },
+
+      created () {
+        // Force a rerender of all translations by artificial reset the labels data object.
+        window.languageEventBus.$on('changeLanguage', () => {
+          this.labels = JSON.parse(JSON.stringify(this.labels))
+        }) 
       }
     })
   }
