@@ -233,7 +233,7 @@ In fact it just take a single argument, which specify the labels key value. In r
   default {
     computed: {
       myLabel () {
-        return this.$labelStore.getTranslation('2dccd1ab3e03990aea77359831c85ca2b')
+        return this.$labelStore.translate(this.labels.COOKIE)
       }
     }
   }
@@ -274,9 +274,9 @@ export default {
   computed: {
     status () {
       if (this.final) {
-        return labels.COOKIE
+        return this.labels.COOKIE
       } else {
-        return labels.CONFIRM
+        return this.11labels.CONFIRM
       }
     }
   }
