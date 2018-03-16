@@ -259,19 +259,27 @@ const Store = {
      * @return  {String}
      *          Concatenation of the before and after argument(s) and the translation of the label.
      */
-      Vue.filter('translate', function (key, after = '', before = '') { 
-        const extendAfter = after.length === 0 ? after : ` ${after}`
-        const extendBefore = before.length === 0 ? before: `${before} `
-        return `${extendBefore}${getTranslation(key, activeLanguage)}${extendAfter}`
-      })
+    Vue.filter('translate', function (key, after = '', before = '') { 
+      const extendAfter = after.length === 0 ? after : ` ${after}`
+      const extendBefore = before.length === 0 ? before: `${before} `
+      return `${extendBefore}${getTranslation(key, activeLanguage)}${extendAfter}`
+    })
 
-      Vue.mixin({
-        data: function () {
-          return {
-            labels: labelKeys
-          }
+
+    /**
+     * Mixin
+     */
+
+    /**
+     * Simple mix for the data object, to distribute the label keys to all components.
+     */
+    Vue.mixin({
+      data: function () {
+        return {
+          labels: labelKeys
         }
-      })
+      }
+    })
   }
 }
 
