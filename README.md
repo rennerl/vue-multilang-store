@@ -46,6 +46,22 @@ Vue.use(LabelStore, {
 })
 ```
 
+### Label Keys
+A list of all available keys, which are used to access the labels. It is represented as an object, where the properties are the representative for each label and the values are the key of the label, used to access them for a translation. 
+
+```js
+Vue.use(LabelStore, {
+  labelKeys: {
+    cookie: 'cookie',
+    confirm: 'confirm'
+  }
+})
+```
+
+This optional and more a feature as comfort and less a functional one. The definition of the [labels](#labels) does not have to fit with this list. But later on it will get clear, why this is very useful.<br>
+By using a [mixin](https://vuejs.org/v2/guide/mixins.html), this list is available for every _Vue_ component, trough its data object.
+
+
 ### Labels
 The definition of an label consists of two parts. First the identifier or key, to access that that label. Followed by a list of translations for the same text (associated with this label) in different languages. It do not have to contain a translation for all languages, if at least one for the [default language](#default-language) is defined. This is especially usable for snippets, which are universal or at least equal between a set of languages.<br>
 Labels can be defined at the options object for this plugin, but can be also [add](#add-label) dynamically during runtime.<br> 
@@ -92,8 +108,8 @@ export const DE = 'de'
 
 _LabelKeys.js_
 ```js
-export const COOKIE = 'cookie'
-export const CONFIRM = 'confirm'
+export const COOKIE = '2dccd1ab3e03990aea77359831c85ca2'
+export const CONFIRM = 'd0cf705f201ddc526f49ba2e62392e21'
 ```
 
 _Labels.js_
@@ -113,11 +129,13 @@ export default {
 _main.js_
 ```js
 import * as langs from './store/Languages'
+import * as keys from './store/LabelKeys'
 import labels from './store/Labels'
 
 Vue.use(LabelStore, {
   languageList: langs, // cause object notation to use
   defaultLanguage: langs.EN,
+  labelKeys: keys,
   labels: labels
 })
 ```
@@ -137,29 +155,51 @@ Used to switch between the languages. It can be changed due to a dropdown menu f
 
 ```html
 <template>
-  <div>
-    <select v-model="selectLang">
-      <option v-for="lang in langList" :value="lang" >
-        {{lang}}
-      </option>
+  <div id="languageSelector">
+    <select title="LanguageSelection">
+      <template v-for="l in list">
+        <option @click="setLanguage(l)"
+                :selected="l === selected">
+          {{ l }}
+        </option>
+      </template>
     </select>
-    <p>{{ 'cookie' | translate }}</p>
   </div>
 </template>
 ```
 ```js
 <script>
+  // Import enums.
+  import * as langs from '../enums/Languages'
+
   export default {
-    data () {
+    name: 'language-selector',
+
+    data: function () {
       return {
-        langList: ['en', 'de'],
-        selectLang: 'en' // define a default language
+        list: [], // The presentative label for each language.
+        selected: '' // The presentative label of the selected language (part of the list).
       }
     },
 
-    watch: {
-      selectLang (lang) {
-         this.$labelStore.setLanguage(lang)
+    methods: {
+      setLanguage: function (l) {
+        this.$labelStore.setLanguage(langs[l])
+      }
+    },
+
+    created: function () {
+      // Get the initial selected language.
+      const current = this.$labelStore.getLanguage()
+
+      // Fill listwith the representative labels of each language.
+      for (let l in langs) {
+        this.list.push(l)
+
+        // Check and set if it is the selected language.
+        if (langs[l] === current) {
+          this.selected = l
+        }
       }
     }
   }
@@ -177,7 +217,7 @@ Labels could not only be defined by the options to the plugin, but also trough a
   export default {
     methods: {
       moreLabels () {
-        this.$labelStore.addLabel('new', ['new', 'neu'])
+        this.$labelStore.addLabel('22af645d1859cb5ca6da0c484f1f37ea', ['new', 'neu'])
         
       }
     }
@@ -194,7 +234,7 @@ In fact it just take a single argument, which specify the labels key value. In r
   default {
     computed: {
       myLabel () {
-        return this.$labelStore.getTranslation('cookie')
+        return this.$labelStore.getTranslation('2dccd1ab3e03990aea77359831c85ca2b')
       }
     }
   }
@@ -207,6 +247,7 @@ In fact it just take a single argument, which specify the labels key value. In r
 ### Filter
 When the store is successfully configured, a label is accessible trough a _Vue_ filter called **translate**. It works like any other filter and can be used on any place.<br>
 It takes the key of a label as value and choose the correct translation by the currently active language. The filter makes sure, to take the default language translation is used for labels, which have no such provided for the active language. If no label is defined for this key, an empty _String_ will be returned.<br>
+If the `labelKeys` are provdided, no import are any different knowledge is required and the keys can be refered directly within the template by the `data` object of the component.<br>
 Furthermore it is possible to provide optional `after` and `before` arguments. They are added dynamically before or after the translation text and are separated with a whitespace from the translation.
 
 The following non-sense component demonstrate the flexible usage. At least it should not be a guide how to use filters in _Vue_.
@@ -214,40 +255,28 @@ The following non-sense component demonstrate the flexible usage. At least it sh
 ```html
 <template>
   <!-- mustache template with plain label key -->
-  <p>{{ 'cookies' | translate }}</p>
+  <p>{{ '2dccd1ab3e03990aea77359831c85ca2b' | translate }}</p>
 
-  <!-- mustache template with data key -->
-  <p>{{ par | translate }}</p>
+  <!-- mustache template with hard coded data key -->
+  <p>{{ exampleKey | translate }}</p>
+  
+  <!-- mustache template with mixin data key -->
+  <p>{{ labels.COOKIE | translate }}</p>
 
   <!-- label key reference to enumeration -->
-  <button @click="toggleStatus">{{ button | translate }}</button>
-
-  <!-- label key from complete enumeration data -->
-  <h1 :html="labelKeys.headerline | translate " />
-
-  <!-- a fictional component with a computed key property -->
-  <my-component :status="status | translate " />
+  <button @click="toggleStatus">{{ status | translate }}</button>
 
   <!-- use the after argument -->
   <span>{{ selectionHeader | translate(` - ${selection}`) }}</span>
 </template>
 ```
 ```js
-import * as labelKeys from './store/LabelKeys'
 
 export default {
   data () {
     return {
-      /* Label Keys*/
-      par: 'cookie', // plain string definition
-      button: labelKeys.CONFIRM, // reference to label key store
-      keys: labelKeys  // provide all label keys for rendering
-
-      /* Status Information */
+      exampleKey: '2dccd1ab3e03990aea77359831c85ca2b'
       final: false,
-      working: true
-
-      /* Other Data */
       selection: 'chocolate'
     }
   },
@@ -255,12 +284,11 @@ export default {
   computed: {
     status () {
       if (this.final) {
-        return labelKeys.FINISHED
+        return labels.COOKIE
       } else {
-        return labelKeys.WORKING
+        return labels.CONFIRM
       }
     }
   }
 }
 ```
-
