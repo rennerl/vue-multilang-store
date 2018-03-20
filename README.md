@@ -2,9 +2,9 @@
 [![Issues](https://img.shields.io/codeclimate/issues/github/me-and/mdf.svg)](#issues)
 
 # Vue Multilanguage Label Store
-> A Vue component to manage multilanguage translations in a store and access them trough filter.
+> A Vue component that makes it easy to manage multilanguage translations in a store and access them trough a filter.
 
-This plugin is used to provide a [Vue](https://vuejs.org/) app to handle multiple languages. Therefore it administrate a so called _label-store_. Each text snippet of text, no mind if it is just a button span description or a complete article, will be represent by such a [label](#labels). It define the same text in different languages. Depending on the selected language the label change its displayed content. This is simply provided by a _Vue_ filter, that can be used anywhere. 
+This plugin is used to provide a [Vue](https://vuejs.org/) app to handle multiple languages. Therefore it administrate a so called _label-store_. Each text snippet of text, no mind if it is just a button span description or a complete article, will be represent by such a [label](#labels). It define the same text in different languages. Depending on the selected language the label change its displayed content. This is simply provided by a _Vue_ filter, that can be used anywhere. Furthermore the selected language is stored locally into the web browsers persistent domain storage, so a user don't have to reselect the language when revisit or reload the page.
 
 ## Installation
 ```js
@@ -58,8 +58,7 @@ Vue.use(LabelStore, {
 })
 ```
 
-This optional and more a feature as comfort and less a functional one. The definition of the [labels](#labels) does not have to fit with this list. But later on it will get clear, why this is very useful.<br>
-By using a [mixin](https://vuejs.org/v2/guide/mixins.html), this list is available for every _Vue_ component, trough its data object.
+By using a [mixin](https://vuejs.org/v2/guide/mixins.html), this list is available for every _Vue_ component, trough its data object as shown [here](#usage). Furthmore this is absolutely required to get the rerendering live, without have to reload the page itself (what also works, cause the persistency).
 
 
 ### Labels
@@ -234,7 +233,7 @@ In fact it just take a single argument, which specify the labels key value. In r
   default {
     computed: {
       myLabel () {
-        return this.$labelStore.getTranslation('2dccd1ab3e03990aea77359831c85ca2b')
+        return this.$labelStore.translate(this.labels.COOKIE)
       }
     }
   }
@@ -247,19 +246,12 @@ In fact it just take a single argument, which specify the labels key value. In r
 ### Filter
 When the store is successfully configured, a label is accessible trough a _Vue_ filter called **translate**. It works like any other filter and can be used on any place.<br>
 It takes the key of a label as value and choose the correct translation by the currently active language. The filter makes sure, to take the default language translation is used for labels, which have no such provided for the active language. If no label is defined for this key, an empty _String_ will be returned.<br>
-If the `labelKeys` are provdided, no import are any different knowledge is required and the keys can be refered directly within the template by the `data` object of the component.<br>
 Furthermore it is possible to provide optional `after` and `before` arguments. They are added dynamically before or after the translation text and are separated with a whitespace from the translation.
 
 The following non-sense component demonstrate the flexible usage. At least it should not be a guide how to use filters in _Vue_.
 
 ```html
-<template>
-  <!-- mustache template with plain label key -->
-  <p>{{ '2dccd1ab3e03990aea77359831c85ca2b' | translate }}</p>
-
-  <!-- mustache template with hard coded data key -->
-  <p>{{ exampleKey | translate }}</p>
-  
+<template>  
   <!-- mustache template with mixin data key -->
   <p>{{ labels.COOKIE | translate }}</p>
 
@@ -271,11 +263,9 @@ The following non-sense component demonstrate the flexible usage. At least it sh
 </template>
 ```
 ```js
-
 export default {
   data () {
     return {
-      exampleKey: '2dccd1ab3e03990aea77359831c85ca2b'
       final: false,
       selection: 'chocolate'
     }
@@ -284,9 +274,9 @@ export default {
   computed: {
     status () {
       if (this.final) {
-        return labels.COOKIE
+        return this.labels.COOKIE
       } else {
-        return labels.CONFIRM
+        return this.11labels.CONFIRM
       }
     }
   }
